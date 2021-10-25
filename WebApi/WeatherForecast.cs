@@ -1,6 +1,6 @@
 using System;
 
-namespace BoilerplateAuthenticationAPI
+namespace WebApi
 {
     public class WeatherForecast
     {
