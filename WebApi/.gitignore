@@ -43,7 +43,3 @@ obj
 
 # Generated SQLite db
 *.db*
-
-# ignores VS related files
-.vs
-.vs/*
