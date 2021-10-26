@@ -42,4 +42,8 @@ bin
 obj
 
 # Generated SQLite db
-*.db
+*.db*
+
+# ignores VS related files
+.vs
+.vs/*
