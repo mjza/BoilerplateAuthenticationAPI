@@ -54,7 +54,7 @@ namespace WebApi
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Scheme = "bearer",
-                    Description = "Please insert JWT token into field"
+                    Description = "Please insert JWT token into the following field."
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
