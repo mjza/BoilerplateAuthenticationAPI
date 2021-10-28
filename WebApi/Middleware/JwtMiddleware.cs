@@ -21,17 +21,21 @@ namespace WebApi.Middleware
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, DataContext dataContext)
+        // Returns a task that represents the completion of request processing.
+        public async Task Invoke(HttpContext httpContext, DataContext dataContext)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            // Extracts JWT token from request header
+            var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
+            // If token is not null then it attaches account to context
             if (token != null)
-                await attachAccountToContext(context, dataContext, token);
+                await attachAccountToContext(httpContext, dataContext, token);
 
-            await _next(context);
+            // Processes the HTTP request.
+            await _next(httpContext);
         }
 
-        private async Task attachAccountToContext(HttpContext context, DataContext dataContext, string token)
+        private async Task attachAccountToContext(HttpContext httpContext, DataContext dataContext, string token)
         {
             try
             {
@@ -41,7 +45,8 @@ namespace WebApi.Middleware
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
+                    //TODO: change the validation condition
+                    ValidateIssuer = false, 
                     ValidateAudience = false,
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
@@ -51,7 +56,7 @@ namespace WebApi.Middleware
                 var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // attach account to context on successful jwt validation
-                context.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
+                httpContext.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
             }
             catch 
             {
