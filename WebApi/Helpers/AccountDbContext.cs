@@ -4,13 +4,13 @@ using WebApi.Entities;
 
 namespace WebApi.Helpers
 {
-    public class DataContext : DbContext
+    public class AccountDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
         
         private readonly IConfiguration Configuration;
 
-        public DataContext(IConfiguration configuration)
+        public AccountDbContext(IConfiguration configuration)
         {
             Configuration = configuration;
         }

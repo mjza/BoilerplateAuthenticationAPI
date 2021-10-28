@@ -22,20 +22,20 @@ namespace WebApi.Middleware
         }
 
         // Returns a task that represents the completion of request processing.
-        public async Task Invoke(HttpContext httpContext, DataContext dataContext)
+        public async Task Invoke(HttpContext httpContext, AccountDbContext accountDbContext)
         {
             // Extracts JWT token from request header
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             // If token is not null then it attaches account to context
             if (token != null)
-                await attachAccountToContext(httpContext, dataContext, token);
+                await attachAccountToContext(httpContext, accountDbContext, token);
 
             // Processes the HTTP request.
             await _next(httpContext);
         }
 
-        private async Task attachAccountToContext(HttpContext httpContext, DataContext dataContext, string token)
+        private async Task attachAccountToContext(HttpContext httpContext, AccountDbContext accountDbContext, string token)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace WebApi.Middleware
                 var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // attach account to context on successful jwt validation
-                httpContext.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
+                httpContext.Items["Account"] = await accountDbContext.Accounts.FindAsync(accountId);
             }
             catch 
             {

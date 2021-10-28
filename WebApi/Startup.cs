@@ -31,7 +31,7 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<DataContext>();
+            services.AddDbContext<AccountDbContext>();
             services.AddCors();
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -75,10 +75,10 @@ namespace WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AccountDbContext accountDbContext)
         {
             // migrate database changes on startup (includes initial db creation)
-            context.Database.Migrate();
+            accountDbContext.Database.Migrate();
 
             if (env.IsDevelopment())
             {
