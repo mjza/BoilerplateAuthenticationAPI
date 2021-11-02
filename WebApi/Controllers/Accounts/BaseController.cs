@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Entities;
+using WebApi.Entities.Accounts;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers.Accounts
 {
     [Controller]
     public abstract class BaseController : ControllerBase

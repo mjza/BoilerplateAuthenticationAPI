@@ -3,9 +3,9 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
-using WebApi.Helpers;
+using WebApi.Helpers.Accounts;
 
-namespace WebApi.Services
+namespace WebApi.Services.Accounts
 {
     public interface IEmailService
     {

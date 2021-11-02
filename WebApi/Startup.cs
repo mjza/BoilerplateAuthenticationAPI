@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using WebApi.Helpers;
-using WebApi.Middleware;
-using WebApi.Services;
+using WebApi.Helpers.Accounts;
+using WebApi.Middleware.Accounts;
+using WebApi.Services.Accounts;
 
 namespace WebApi
 {
@@ -68,7 +68,7 @@ namespace WebApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] { }
+                        Array.Empty<string>()
                     }
                 });
             });

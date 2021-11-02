@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using WebApi.Entities;
+using WebApi.Entities.Accounts;
 
-namespace WebApi.Helpers
+namespace WebApi.Helpers.Accounts
 {
     public class AccountDbContext : DbContext
     {

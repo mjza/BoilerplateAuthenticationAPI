@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.Entities
+namespace WebApi.Entities.Accounts
 {
     [Owned]
     public class RefreshToken

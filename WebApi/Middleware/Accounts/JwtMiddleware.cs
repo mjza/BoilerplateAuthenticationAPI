@@ -6,9 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Helpers;
+using WebApi.Helpers.Accounts;
 
-namespace WebApi.Middleware
+namespace WebApi.Middleware.Accounts
 {
     public class JwtMiddleware
     {
@@ -29,13 +29,13 @@ namespace WebApi.Middleware
 
             // If token is not null then it attaches account to context
             if (token != null)
-                await attachAccountToContext(httpContext, accountDbContext, token);
+                await AttachAccountToContext(httpContext, accountDbContext, token);
 
             // Processes the HTTP request.
             await _next(httpContext);
         }
 
-        private async Task attachAccountToContext(HttpContext httpContext, AccountDbContext accountDbContext, string token)
+        private async Task AttachAccountToContext(HttpContext httpContext, AccountDbContext accountDbContext, string token)
         {
             try
             {

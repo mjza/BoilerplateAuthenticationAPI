@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WebApi.Helpers;
+using WebApi.Helpers.Accounts;
 
-namespace WebApi.Middleware
+namespace WebApi.Middleware.Accounts
 {
     public class ErrorHandlerMiddleware
     {
@@ -33,11 +33,11 @@ namespace WebApi.Middleware
 
                 switch(error)
                 {
-                    case AppException e:
+                    case AppException:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         break;
-                    case KeyNotFoundException e:
+                    case KeyNotFoundException:
                         // not found error
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;

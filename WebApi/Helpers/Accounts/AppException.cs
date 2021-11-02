@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace WebApi.Helpers
+namespace WebApi.Helpers.Accounts
 {
     // custom exception class for throwing application specific exceptions 
     // that can be caught and handled within the application

@@ -9,11 +9,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using WebApi.Entities;
-using WebApi.Helpers;
+using WebApi.Entities.Accounts;
+using WebApi.Helpers.Accounts;
 using WebApi.Models.Accounts;
 
-namespace WebApi.Services
+namespace WebApi.Services.Accounts
 {
     public interface IAccountService
     {
@@ -59,12 +59,12 @@ namespace WebApi.Services
                 throw new AppException("Email or password is incorrect");
 
             // authentication successful so generate jwt and refresh tokens
-            var jwtToken = generateJwtToken(account);
-            var refreshToken = generateRefreshToken(ipAddress);
+            var jwtToken = GenerateJwtToken(account);
+            var refreshToken = GenerateRefreshToken(ipAddress);
             account.RefreshTokens.Add(refreshToken);
 
             // remove old refresh tokens from account
-            removeOldRefreshTokens(account);
+            RemoveOldRefreshTokens(account);
 
             // save changes to db
             _accountDbContext.Update(account);
@@ -78,22 +78,22 @@ namespace WebApi.Services
 
         public AuthenticateResponse RefreshToken(string token, string ipAddress)
         {
-            var (refreshToken, account) = getRefreshToken(token);
+            var (refreshToken, account) = GetRefreshToken(token);
 
             // replace old refresh token with a new one and save
-            var newRefreshToken = generateRefreshToken(ipAddress);
+            var newRefreshToken = GenerateRefreshToken(ipAddress);
             refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             refreshToken.ReplacedByToken = newRefreshToken.Token;
             account.RefreshTokens.Add(newRefreshToken);
 
-            removeOldRefreshTokens(account);
+            RemoveOldRefreshTokens(account);
 
             _accountDbContext.Update(account);
             _accountDbContext.SaveChanges();
 
             // generate new jwt
-            var jwtToken = generateJwtToken(account);
+            var jwtToken = GenerateJwtToken(account);
 
             var response = _mapper.Map<AuthenticateResponse>(account);
             response.JwtToken = jwtToken;
@@ -103,7 +103,7 @@ namespace WebApi.Services
 
         public void RevokeToken(string token, string ipAddress)
         {
-            var (refreshToken, account) = getRefreshToken(token);
+            var (refreshToken, account) = GetRefreshToken(token);
 
             // revoke token and save
             refreshToken.Revoked = DateTime.UtcNow;
@@ -118,7 +118,7 @@ namespace WebApi.Services
             if (_accountDbContext.Accounts.Any(x => x.Email == model.Email))
             {
                 // send already registered error in email to prevent account enumeration
-                sendAlreadyRegisteredEmail(model.Email, origin);
+                SendAlreadyRegisteredEmail(model.Email, origin);
                 return;
             }
 
@@ -126,10 +126,10 @@ namespace WebApi.Services
             var account = _mapper.Map<Account>(model);
 
             // first registered account is an admin
-            var isFirstAccount = _accountDbContext.Accounts.Count() == 0;
+            var isFirstAccount = !_accountDbContext.Accounts.Any();
             account.Role = isFirstAccount ? Role.Admin : Role.User;
             account.Created = DateTime.UtcNow;
-            account.VerificationToken = randomTokenString();
+            account.VerificationToken = RandomTokenString();
 
             // hash password
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -139,7 +139,7 @@ namespace WebApi.Services
             _accountDbContext.SaveChanges();
 
             // send email
-            sendVerificationEmail(account, origin);
+            SendVerificationEmail(account, origin);
         }
 
         public void VerifyEmail(string token)
@@ -163,14 +163,14 @@ namespace WebApi.Services
             if (account == null) return;
 
             // create reset token that expires after 1 day
-            account.ResetToken = randomTokenString();
+            account.ResetToken = RandomTokenString();
             account.ResetTokenExpires = DateTime.UtcNow.AddDays(1);
 
             _accountDbContext.Accounts.Update(account);
             _accountDbContext.SaveChanges();
 
             // send email
-            sendPasswordResetEmail(account, origin);
+            SendPasswordResetEmail(account, origin);
         }
 
         public void ValidateResetToken(ValidateResetTokenRequest model)
@@ -210,7 +210,7 @@ namespace WebApi.Services
 
         public AccountResponse GetById(int id)
         {
-            var account = getAccount(id);
+            var account = GetAccount(id);
             return _mapper.Map<AccountResponse>(account);
         }
 
@@ -237,7 +237,7 @@ namespace WebApi.Services
 
         public AccountResponse Update(int id, UpdateRequest model)
         {
-            var account = getAccount(id);
+            var account = GetAccount(id);
 
             // validate
             if (account.Email != model.Email && _accountDbContext.Accounts.Any(x => x.Email == model.Email))
@@ -258,21 +258,21 @@ namespace WebApi.Services
 
         public void Delete(int id)
         {
-            var account = getAccount(id);
+            var account = GetAccount(id);
             _accountDbContext.Accounts.Remove(account);
             _accountDbContext.SaveChanges();
         }
 
         // helper methods
 
-        private Account getAccount(int id)
+        private Account GetAccount(int id)
         {
             var account = _accountDbContext.Accounts.Find(id);
             if (account == null) throw new KeyNotFoundException("Account not found");
             return account;
         }
 
-        private (RefreshToken, Account) getRefreshToken(string token)
+        private (RefreshToken, Account) GetRefreshToken(string token)
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
             if (account == null) throw new AppException("Invalid token");
@@ -281,7 +281,7 @@ namespace WebApi.Services
             return (refreshToken, account);
         }
 
-        private string generateJwtToken(Account account)
+        private string GenerateJwtToken(Account account)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -295,25 +295,25 @@ namespace WebApi.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private RefreshToken generateRefreshToken(string ipAddress)
+        private static RefreshToken GenerateRefreshToken(string ipAddress)
         {
             return new RefreshToken
             {
-                Token = randomTokenString(),
+                Token = RandomTokenString(),
                 Expires = DateTime.UtcNow.AddDays(7),
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
 
-        private void removeOldRefreshTokens(Account account)
+        private void RemoveOldRefreshTokens(Account account)
         {
             account.RefreshTokens.RemoveAll(x => 
                 !x.IsActive && 
                 x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
         }
 
-        private string randomTokenString()
+        private static string RandomTokenString()
         {
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
             var randomBytes = new byte[40];
@@ -322,7 +322,7 @@ namespace WebApi.Services
             return BitConverter.ToString(randomBytes).Replace("-", "");
         }
 
-        private void sendVerificationEmail(Account account, string origin)
+        private void SendVerificationEmail(Account account, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
@@ -346,7 +346,7 @@ namespace WebApi.Services
             );
         }
 
-        private void sendAlreadyRegisteredEmail(string email, string origin)
+        private void SendAlreadyRegisteredEmail(string email, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
@@ -363,7 +363,7 @@ namespace WebApi.Services
             );
         }
 
-        private void sendPasswordResetEmail(Account account, string origin)
+        private void SendPasswordResetEmail(Account account, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
