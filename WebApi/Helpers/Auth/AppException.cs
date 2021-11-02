@@ -7,13 +7,49 @@ namespace WebApi.Helpers.Auth
     // that can be caught and handled within the application
     public class AppException : Exception
     {
-        public AppException() : base() {}
+        private int statusCode = 400;
+        private string title = null;
+        private string type = null;
 
-        public AppException(string message) : base(message) { }
+        public int StatusCode
+        {
+            get { return statusCode; }
+            set { statusCode = value; }
+        }
 
-        public AppException(string message, params object[] args) 
+        public string Title
+        {
+            get { return title; }
+            set { title = value; }
+        }
+
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+
+        public AppException() : base()
+        {
+            statusCode = 400;
+            title = "Bad Request";
+            type = "BadRequest";
+        }
+
+        public AppException(string message, int statusCode = 400, string type = "BadRequest", string title = "Bad Request") : base(message)
+        {
+            this.statusCode = statusCode;
+            this.type = type;
+            this.title = title;
+        }
+
+        public AppException(string message, int statusCode = 400, string type = "BadRequest", string title = "Bad Request", params object[] args)
             : base(String.Format(CultureInfo.CurrentCulture, message, args))
         {
+            this.statusCode = statusCode;
+            this.type = type;
+            this.title = title;
         }
     }
 }
