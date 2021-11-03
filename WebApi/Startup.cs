@@ -1,11 +1,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using WebApi.Extensions;
 using WebApi.Helpers.Auth;
 using WebApi.Middleware.Auth;
 using WebApi.Services.Auth;
@@ -24,11 +26,18 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureDBContext(Configuration);
 
-            services.AddDbContext<AccountDbContext>();
-            services.AddCors();
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+            services.ConfigureCors();
+
+            services.ConfigureIISIntegration();
+            
+            services.AddControllers()
+                    .AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true)
+                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            
             services.AddSwaggerGen();
 
             // configure strongly typed settings object
@@ -91,11 +100,13 @@ namespace WebApi
             app.UseAuthorization();
 
             // global cors policy
+            /* // TODO Moved to services extension 
             app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
+            */
 
             // global error handler
             app.UseMiddleware<ErrorHandlerMiddleware>();

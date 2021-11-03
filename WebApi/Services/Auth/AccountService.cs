@@ -23,13 +23,14 @@ namespace WebApi.Services.Auth
         void Register(RegisterRequest model, string origin);
         void VerifyEmail(string token);
         void ForgotPassword(ForgotPasswordRequest model, string origin);
+        void ResendVerificationToken(ResendVerificationTokenRequest model, string origin);
         void ValidateResetToken(ValidateResetTokenRequest model);
         void ResetPassword(ResetPasswordRequest model);
         IEnumerable<AccountResponse> GetAll();
-        AccountResponse GetById(int id);
+        AccountResponse GetById(Guid id);
         AccountResponse Create(CreateRequest model);
-        AccountResponse Update(int id, UpdateRequest model);
-        void Delete(int id);
+        AccountResponse Update(Guid id, UpdateRequest model);
+        void Delete(Guid id);
     }
 
     public class AccountService : IAccountService
@@ -82,7 +83,7 @@ namespace WebApi.Services.Auth
 
             // replace old refresh token with a new one and save
             var newRefreshToken = GenerateRefreshToken(ipAddress);
-            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedAt = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             refreshToken.ReplacedByToken = newRefreshToken.Token;
             account.RefreshTokens.Add(newRefreshToken);
@@ -106,7 +107,7 @@ namespace WebApi.Services.Auth
             var (refreshToken, account) = GetRefreshToken(token);
 
             // revoke token and save
-            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.RevokedAt = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             _accountDbContext.Update(account);
             _accountDbContext.SaveChanges();
@@ -128,7 +129,7 @@ namespace WebApi.Services.Auth
             // first registered account is an admin
             var isFirstAccount = !_accountDbContext.Accounts.Any();
             account.Role = isFirstAccount ? Role.Admin : Role.User;
-            account.Created = DateTime.UtcNow;
+            account.CreatedAt = DateTime.UtcNow;
             account.VerificationToken = RandomTokenString();
 
             // hash password
@@ -148,11 +149,33 @@ namespace WebApi.Services.Auth
 
             if (account == null) throw new AppException("Verification failed");
 
-            account.Verified = DateTime.UtcNow;
+            account.VerifiedAt = DateTime.UtcNow;
             account.VerificationToken = null;
 
             _accountDbContext.Accounts.Update(account);
             _accountDbContext.SaveChanges();
+        }
+
+        public void ResendVerificationToken(ResendVerificationTokenRequest model, string origin)
+        {
+            var account = _accountDbContext.Accounts.SingleOrDefault(x => x.Email == model.Email);
+
+            // always return ok response to prevent email enumeration
+            if (account == null) return;
+
+            // check if the account is already verified or not 
+            if (account.IsVerified)
+            {
+                throw new AppException("This email address is already verified.");
+            }
+
+            account.VerificationToken = RandomTokenString();
+
+            _accountDbContext.Accounts.Update(account);
+            _accountDbContext.SaveChanges();
+
+            // send email
+            SendVerificationEmail(account, origin);
         }
 
         public void ForgotPassword(ForgotPasswordRequest model, string origin)
@@ -164,7 +187,7 @@ namespace WebApi.Services.Auth
 
             // create reset token that expires after 1 day
             account.ResetToken = RandomTokenString();
-            account.ResetTokenExpires = DateTime.UtcNow.AddDays(1);
+            account.ResetTokenExpiresAt = DateTime.UtcNow.AddDays(1);
 
             _accountDbContext.Accounts.Update(account);
             _accountDbContext.SaveChanges();
@@ -177,7 +200,7 @@ namespace WebApi.Services.Auth
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTime.UtcNow);
+                x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");
@@ -187,16 +210,16 @@ namespace WebApi.Services.Auth
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTime.UtcNow);
+                x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");
 
             // update password and remove reset token
             account.PasswordHash = BC.HashPassword(model.Password);
-            account.PasswordReset = DateTime.UtcNow;
+            account.PasswordResetedAt = DateTime.UtcNow;
             account.ResetToken = null;
-            account.ResetTokenExpires = null;
+            account.ResetTokenExpiresAt = null;
 
             _accountDbContext.Accounts.Update(account);
             _accountDbContext.SaveChanges();
@@ -208,7 +231,7 @@ namespace WebApi.Services.Auth
             return _mapper.Map<IList<AccountResponse>>(accounts);
         }
 
-        public AccountResponse GetById(int id)
+        public AccountResponse GetById(Guid id)
         {
             var account = GetAccount(id);
             return _mapper.Map<AccountResponse>(account);
@@ -222,8 +245,8 @@ namespace WebApi.Services.Auth
 
             // map model to new account object
             var account = _mapper.Map<Account>(model);
-            account.Created = DateTime.UtcNow;
-            account.Verified = DateTime.UtcNow;
+            account.CreatedAt = DateTime.UtcNow;
+            account.VerifiedAt = DateTime.UtcNow;
 
             // hash password
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -235,7 +258,7 @@ namespace WebApi.Services.Auth
             return _mapper.Map<AccountResponse>(account);
         }
 
-        public AccountResponse Update(int id, UpdateRequest model)
+        public AccountResponse Update(Guid id, UpdateRequest model)
         {
             var account = GetAccount(id);
 
@@ -249,14 +272,14 @@ namespace WebApi.Services.Auth
 
             // copy model to account and save
             _mapper.Map(model, account);
-            account.Updated = DateTime.UtcNow;
+            account.UpdatedAt = DateTime.UtcNow;
             _accountDbContext.Accounts.Update(account);
             _accountDbContext.SaveChanges();
 
             return _mapper.Map<AccountResponse>(account);
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var account = GetAccount(id);
             _accountDbContext.Accounts.Remove(account);
@@ -265,7 +288,7 @@ namespace WebApi.Services.Auth
 
         // helper methods
 
-        private Account GetAccount(int id)
+        private Account GetAccount(Guid id)
         {
             var account = _accountDbContext.Accounts.Find(id);
             if (account == null) throw new KeyNotFoundException("Account not found");
@@ -300,8 +323,8 @@ namespace WebApi.Services.Auth
             return new RefreshToken
             {
                 Token = RandomTokenString(),
-                Expires = DateTime.UtcNow.AddDays(7),
-                Created = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                CreatedAt = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
@@ -310,7 +333,7 @@ namespace WebApi.Services.Auth
         {
             account.RefreshTokens.RemoveAll(x => 
                 !x.IsActive && 
-                x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
+                x.CreatedAt.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
         }
 
         private static string RandomTokenString()

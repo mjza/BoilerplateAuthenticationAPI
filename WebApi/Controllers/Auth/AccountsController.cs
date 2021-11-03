@@ -104,6 +104,20 @@ namespace WebApi.Controllers.Auth
             }
         }
 
+        [HttpPost("resend-verification-token")]
+        public IActionResult ResendVerificationToken(ResendVerificationTokenRequest model)
+        {
+            try
+            {
+                _accountService.ResendVerificationToken(model, Request.Headers["origin"]);
+                return Ok(new { message = "Please check your email for new verification token." });
+            }
+            catch (AppException e)
+            {
+                return Problem(e.Message, null, e.StatusCode, null, e.Type);
+            }
+        }
+
         [HttpPost("forgot-password")]
         public IActionResult ForgotPassword(ForgotPasswordRequest model)
         {
@@ -163,7 +177,7 @@ namespace WebApi.Controllers.Auth
 
         [Authorize]
         [HttpGet("{id:int}")]
-        public ActionResult<AccountResponse> GetById(int id)
+        public ActionResult<AccountResponse> GetById(Guid id)
         {
             // users can get their own account and admins can get any account
             if (id != Account.Id && Account.Role != Role.Admin)
@@ -190,7 +204,7 @@ namespace WebApi.Controllers.Auth
 
         [Authorize]
         [HttpPut("{id:int}")]
-        public ActionResult<AccountResponse> Update(int id, UpdateRequest model)
+        public ActionResult<AccountResponse> Update(Guid id, UpdateRequest model)
         {
             try
             {
@@ -220,7 +234,7 @@ namespace WebApi.Controllers.Auth
 
         [Authorize]
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid id)
         {
             try
             {

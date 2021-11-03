@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using WebApi.Entities.Auth;
 
@@ -9,8 +10,8 @@ namespace WebApi.Models.Auth
         private string _confirmPassword;
         private string _role;
         private string _email;
-        
-        public string Title { get; set; }
+        public string TitleId { get; set; }
+        public string LocaleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -28,7 +29,8 @@ namespace WebApi.Models.Auth
             set => _email = ReplaceEmptyWithNull(value);
         }
 
-        [MinLength(6)]
+        [RegularExpression(@"^(?=.*[a-zäöü])(?=.*[A-ZÄÖÜß])(?=.*\d)[a-zäöüA-ZÄÖÜß0-9\s!@#$%^&*§\/\? '+=)(<>;,.:_°`´-]{8,30}$",
+            ErrorMessage = "The Password field must contain 8 to 30 characters, minimum 1 lowecase, minumum 1 upercase, minimum 1 digits, and can have symbols.")]
         public string Password
         {
             get => _password;
@@ -42,8 +44,19 @@ namespace WebApi.Models.Auth
             set => _confirmPassword = ReplaceEmptyWithNull(value);
         }
 
-        // helpers
+        public DateTime? Birthday { get; set; }
 
+        public string GenderId { get; set; }
+
+        public string Settings { get; set; }
+
+        public string Street { get; set; }
+
+        public string Number { get; set; }
+
+        public string PostCode { get; set; }
+
+        // helpers
         private static string ReplaceEmptyWithNull(string value)
         {
             // replace empty string with null to make field optional

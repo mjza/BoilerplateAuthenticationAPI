@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Models.Auth
 {
-    public class ForgotPasswordRequest
+    public class ResendVerificationTokenRequest
     {
         [Required]
         [EmailAddress]

@@ -1,23 +1,22 @@
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Entities.Auth
 {
-    [Owned]
-    public class RefreshToken
+    public partial class RefreshToken
     {
         [Key]
-        public int Id { get; set; }
-        public Account Account { get; set; }
+        public Guid Id { get; set; }
+        public Guid AccountId { get; set; }
+        public virtual Account Account { get; set; }
         public string Token { get; set; }
-        public DateTime Expires { get; set; }
-        public bool IsExpired => DateTime.UtcNow >= Expires;
-        public DateTime Created { get; set; }
+        public DateTime ExpiresAt { get; set; }
+        public bool IsExpired => DateTime.UtcNow >= ExpiresAt;
+        public DateTime CreatedAt { get; set; }
         public string CreatedByIp { get; set; }
-        public DateTime? Revoked { get; set; }
+        public DateTime? RevokedAt { get; set; }
         public string RevokedByIp { get; set; }
         public string ReplacedByToken { get; set; }
-        public bool IsActive => Revoked == null && !IsExpired;
+        public bool IsActive => RevokedAt == null && !IsExpired;
     }
 }
