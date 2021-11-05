@@ -1,4 +1,4 @@
-﻿# Create a appsettings.Local.json file in the WebApi folder and copy the following content inside of it:
+﻿## Create a appsettings.Local.json file in the WebApi folder and copy the following content inside of it:
 
 ```json
 {
@@ -11,31 +11,53 @@
 
 Then change the connection setting based on your environment DB settings. 
 
-# Generate DB initializer from models:
+## Generate DB initializer from models:
 
 1. Open Power Shell 
-2.1. Install the entity framework tool:
+2. Install the entity framework tool:
+```
     dotnet tool install --global dotnet-ef
-2.2. Or if it is needed to update the entity framework tool then:
+```
+3. Or if it is needed to update the entity framework tool then:
+```
     dotnet tool update --global dotnet-ef
-3.1. CD C:\Users\Username\Documents\GitHub\BoilerplateAuthenticationAPI\WebApi
-3.2. Maybe you need to remove the last migrations, go to Migration folder and delete the files
-4. dotnet ef migrations add InitialCreate --context AccountDbContext --output-dir Migrations/Auth
+```
+4. Move to your project folder:
+```
+CD C:\Users\Username\Documents\GitHub\BoilerplateAuthenticationAPI\WebApi
+```
+5. Maybe you need to remove the last migrations, go to `Migration/Auth` folder and delete the files
+6. Generate the migration files for MSSQL:
+```
+dotnet ef migrations add InitialCreate --context AccountDbContext --output-dir Migrations/Auth
+```
 
+## Migrate DB:
 
-# Migrate DB:
+```
+dotnet ef database update --context AccountDbContext
+```
 
-1. dotnet ef database update --context AccountDbContext
+## Revert the last migration:
 
-# Revert the last migration:
+```
+dotnet ef database update 0 --context AccountDbContext
+```
 
-1. dotnet ef database update 0 --context AccountDbContext
+## Remove the migration file:
 
-# Remove the migration file:
+```
+dotnet ef migrations remove --context AccountDbContext
+```
 
-1. dotnet ef migrations remove --context AccountDbContext
+## Make model from DB
 
-# Make model from DB
-dotnet ef dbcontext scaffold "server=localhost;port=3306;userid=root;password=;database=WebApidb;TreatTinyAsBoolean=true;" Pomelo.EntityFrameworkCore.MySql -o Models/Auth -c "AccountDbContext"
+1. If you have MySQL:
+```
+dotnet ef dbcontext scaffold "server=localhost;port=3306;userid=root;password=;database=WebApiDB;TreatTinyAsBoolean=true;" Pomelo.EntityFrameworkCore.MySql -o Models/Auth -c "AccountDbContext"
+```
+2. If you have MSSQL:
+
+``` 
 dotnet ef dbcontext scaffold "Data Source=JSGHJ72;User ID=sa;Password=KwJNolfvex8m;Database=WebApiDB;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer -o Entities/Exported -c "DbContext"
-dotnet ef dbcontext scaffold "Data Source=DESKTOP-I2G04UF;User ID=sa;Password=KwJNolfvex8m;Database=WebApiDB;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer -o Entities/Exported -c "DbContext"
+```

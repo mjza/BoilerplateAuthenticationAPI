@@ -163,7 +163,7 @@ namespace WebApi.Migrations.Auth
                     b.HasIndex("TitleId")
                         .HasDatabaseName("accounts_title_id_foreign");
 
-                    b.ToTable("accounts", "WebApidbo");
+                    b.ToTable("accounts", "AuthDBO");
 
                     b.HasData(
                         new
@@ -179,7 +179,7 @@ namespace WebApi.Migrations.Auth
                             LocaleId = "en",
                             NationalityId = "de",
                             Number = "137a",
-                            PasswordHash = "$2a$11$zW9.9gyeqD31PnTqqlJTF.0pOKK8/YxM52J7JhQIiF.phYXY8yJm2",
+                            PasswordHash = "$2a$11$4eQ4DzbnvjRmRv0iTZKeMe1vpAgN.ph5lnIXjgadexhXape8SBFP6",
                             PostCode = "50825",
                             ProfessionId = new Guid("54a130d2-502f-4cf1-a376-63edeb000003"),
                             Role = 0,
@@ -201,7 +201,7 @@ namespace WebApi.Migrations.Auth
                             LocaleId = "de",
                             NationalityId = "de",
                             Number = "138a",
-                            PasswordHash = "$2a$11$rQv2R8IMC6ehATVOP7/Iuunfa5kd.fNOzyHZKgj.EBbomhmOiIuqe",
+                            PasswordHash = "$2a$11$P28XZnEbbX7ejXUvz7XTPu540gyS61fEPlFmOkgJCVkTzTWyqiH4O",
                             PostCode = "53698",
                             ProfessionId = new Guid("54a130d2-502f-4cf1-a376-63edeb000001"),
                             Role = 1,
@@ -216,14 +216,14 @@ namespace WebApi.Migrations.Auth
                             AcceptTerms = false,
                             Birthday = new DateTime(2000, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2020, 1, 7, 9, 10, 30, 0, DateTimeKind.Unspecified),
-                            Email = "patient1@gmail.com",
-                            FirstName = "Patient",
+                            Email = "user1@gmail.com",
+                            FirstName = "User",
                             GenderId = "m",
                             LastName = "1",
                             LocaleId = "en",
                             NationalityId = "de",
                             Number = "137c",
-                            PasswordHash = "$2a$11$r7Di9joy6vScFNI7zUCES.S6rRvfyLRnk9KlCYA0l1PN5CAeYj7hO",
+                            PasswordHash = "$2a$11$w7qfN0qj/PwUzj7hmeB.i.VURxAn2S18v6YsAjNzNzELRkMNNLyCu",
                             ProfessionId = new Guid("54a130d2-502f-4cf1-a376-63edeb000002"),
                             Role = 2,
                             Settings = "{}",
@@ -255,7 +255,7 @@ namespace WebApi.Migrations.Auth
                     b.HasIndex("CountryId")
                         .HasDatabaseName("cities_country_id_foreign");
 
-                    b.ToTable("cities", "WebApidbo");
+                    b.ToTable("cities", "AuthDBO");
 
                     b.HasData(
                         new
@@ -303,7 +303,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("countries", "WebApidbo");
+                    b.ToTable("countries", "AuthDBO");
 
                     b.HasData(
                         new
@@ -334,7 +334,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("genders", "WebApidbo");
+                    b.ToTable("genders", "AuthDBO");
 
                     b.HasData(
                         new
@@ -367,7 +367,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("locales", "WebApidbo");
+                    b.ToTable("locales", "AuthDBO");
 
                     b.HasData(
                         new
@@ -396,7 +396,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("nationalities", "WebApidbo");
+                    b.ToTable("nationalities", "AuthDBO");
 
                     b.HasData(
                         new
@@ -425,7 +425,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("professions", "WebApidbo");
+                    b.ToTable("professions", "AuthDBO");
 
                     b.HasData(
                         new
@@ -493,7 +493,7 @@ namespace WebApi.Migrations.Auth
                     b.HasIndex("AccountId")
                         .HasDatabaseName("FK_RefreshToken_Accounts_AccountId");
 
-                    b.ToTable("refresh_tokens", "WebApidbo");
+                    b.ToTable("refresh_tokens", "AuthDBO");
                 });
 
             modelBuilder.Entity("WebApi.Entities.Auth.Title", b =>
@@ -510,7 +510,7 @@ namespace WebApi.Migrations.Auth
 
                     b.HasKey("Id");
 
-                    b.ToTable("titles", "WebApidbo");
+                    b.ToTable("titles", "AuthDBO");
 
                     b.HasData(
                         new

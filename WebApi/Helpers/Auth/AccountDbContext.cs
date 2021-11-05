@@ -34,7 +34,7 @@ namespace WebApi.Helpers.Auth
         {
             modelBuilder.Entity<Account>(entity =>
             {
-                entity.ToTable("accounts", "WebApidbo");
+                entity.ToTable("accounts", "AuthDBO");
 
                 entity.HasIndex(e => e.LocaleId)
                     .HasDatabaseName("accounts_locale_id_foreign");
@@ -185,7 +185,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Nationality>(entity =>
             {
-                entity.ToTable("nationalities", "WebApidbo");
+                entity.ToTable("nationalities", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -197,7 +197,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Profession>(entity =>
             {
-                entity.ToTable("professions", "WebApidbo");
+                entity.ToTable("professions", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -210,7 +210,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<City>(entity =>
             {
-                entity.ToTable("cities", "WebApidbo");
+                entity.ToTable("cities", "AuthDBO");
 
                 entity.HasIndex(e => e.CountryId)
                     .HasDatabaseName("cities_country_id_foreign");
@@ -236,7 +236,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Country>(entity =>
             {
-                entity.ToTable("countries", "WebApidbo");
+                entity.ToTable("countries", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -252,7 +252,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Gender>(entity =>
             {
-                entity.ToTable("genders", "WebApidbo");
+                entity.ToTable("genders", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -265,7 +265,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Title>(entity =>
             {
-                entity.ToTable("titles", "WebApidbo");
+                entity.ToTable("titles", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -277,7 +277,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<Locale>(entity =>
             {
-                entity.ToTable("locales", "WebApidbo");
+                entity.ToTable("locales", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -289,7 +289,7 @@ namespace WebApi.Helpers.Auth
 
             modelBuilder.Entity<RefreshToken>(entity =>
             {
-                entity.ToTable("refresh_tokens", "WebApidbo");
+                entity.ToTable("refresh_tokens", "AuthDBO");
 
                 entity.HasIndex(e => e.AccountId)
                     .HasDatabaseName("FK_RefreshToken_Accounts_AccountId");

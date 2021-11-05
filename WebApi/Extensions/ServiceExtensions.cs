@@ -1,10 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-//using Pomelo.EntityFrameworkCore.MySql.Storage;
-//using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using WebApi.Helpers.Auth;
 
 namespace WebApi.Extensions
@@ -39,7 +36,7 @@ namespace WebApi.Extensions
             {
                 // https://www.koskila.net/ef-core-returns-null-for-a-navigation-property/
                 // Used lazy loading here to resolving the missing tokens on account in time of revoking 
-                options.UseLazyLoadingProxies().UseSqlServer(configuration.GetConnectionString("SqlServerConnection"));
+                options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"));
             });
         }
 

@@ -8,11 +8,11 @@ namespace WebApi.Migrations.Auth
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "WebApidbo");
+                name: "AuthDBO");
 
             migrationBuilder.CreateTable(
                 name: "countries",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -26,7 +26,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "genders",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "nvarchar(1)", maxLength: 1, nullable: false),
@@ -39,7 +39,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "locales",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
@@ -52,7 +52,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "nationalities",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
@@ -65,7 +65,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "professions",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "UniqueIdentifier", nullable: false),
@@ -78,7 +78,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "titles",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
@@ -91,7 +91,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "cities",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "UniqueIdentifier", nullable: false),
@@ -104,7 +104,7 @@ namespace WebApi.Migrations.Auth
                     table.ForeignKey(
                         name: "cities$cities_country_id_foreign",
                         column: x => x.country_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "countries",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -112,7 +112,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "accounts",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "UniqueIdentifier", nullable: false),
@@ -146,35 +146,35 @@ namespace WebApi.Migrations.Auth
                     table.ForeignKey(
                         name: "accounts$accounts_gender_id_foreign",
                         column: x => x.gender_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "genders",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "accounts$accounts_locale_id_foreign",
                         column: x => x.locale_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "locales",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "accounts$accounts_nationality_id_foreign",
                         column: x => x.nationality_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "nationalities",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "accounts$accounts_profession_id_foreign",
                         column: x => x.profession_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "professions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "accounts$accounts_title_id_foreign",
                         column: x => x.title_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "titles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -182,7 +182,7 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateTable(
                 name: "refresh_tokens",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "UniqueIdentifier", nullable: false),
@@ -201,14 +201,14 @@ namespace WebApi.Migrations.Auth
                     table.ForeignKey(
                         name: "refresh_tokens$FK_RefreshToken_Accounts_AccountId",
                         column: x => x.account_id,
-                        principalSchema: "WebApidbo",
+                        principalSchema: "AuthDBO",
                         principalTable: "accounts",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "countries",
                 columns: new[] { "id", "name", "tell_code" },
                 values: new object[,]
@@ -218,7 +218,7 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "genders",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -229,7 +229,7 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "locales",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -239,7 +239,7 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "nationalities",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -249,7 +249,7 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "professions",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -260,7 +260,7 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "titles",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -273,18 +273,18 @@ namespace WebApi.Migrations.Auth
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 columns: new[] { "id", "accept_terms", "birthday", "created_at", "email", "first_name", "gender_id", "last_name", "locale_id", "nationality_id", "number", "password_hash", "password_reseted_at", "postcode", "profession_id", "reset_token", "reset_token_expires_at", "role", "settings", "street", "title_id", "updated_at", "verification_token", "verified_at" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), true, new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 12, 30, 9, 10, 30, 0, DateTimeKind.Unspecified), "super1@gmail.com", "Super", "m", "1", "en", "de", "137a", "$2a$11$zW9.9gyeqD31PnTqqlJTF.0pOKK8/YxM52J7JhQIiF.phYXY8yJm2", null, "50825", new Guid("54a130d2-502f-4cf1-a376-63edeb000003"), null, null, 0, "{}", "Bonnstr.", "mr", null, null, new DateTime(2020, 1, 1, 9, 10, 30, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), true, new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 1, 5, 9, 10, 30, 0, DateTimeKind.Unspecified), "admin1@gmail.com", "Admin", "m", "1", "de", "de", "138a", "$2a$11$rQv2R8IMC6ehATVOP7/Iuunfa5kd.fNOzyHZKgj.EBbomhmOiIuqe", null, "53698", new Guid("54a130d2-502f-4cf1-a376-63edeb000001"), null, null, 1, "{}", "Bonnstr.", "mr", null, null, new DateTime(2020, 4, 1, 9, 10, 30, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000006"), false, new DateTime(2000, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 1, 7, 9, 10, 30, 0, DateTimeKind.Unspecified), "patient1@gmail.com", "Patient", "m", "1", "en", "de", "137c", "$2a$11$r7Di9joy6vScFNI7zUCES.S6rRvfyLRnk9KlCYA0l1PN5CAeYj7hO", null, null, new Guid("54a130d2-502f-4cf1-a376-63edeb000002"), null, null, 2, "{}", "Alexstr.", "mr", null, null, null }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), true, new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 12, 30, 9, 10, 30, 0, DateTimeKind.Unspecified), "super1@gmail.com", "Super", "m", "1", "en", "de", "137a", "$2a$11$4eQ4DzbnvjRmRv0iTZKeMe1vpAgN.ph5lnIXjgadexhXape8SBFP6", null, "50825", new Guid("54a130d2-502f-4cf1-a376-63edeb000003"), null, null, 0, "{}", "Bonnstr.", "mr", null, null, new DateTime(2020, 1, 1, 9, 10, 30, 0, DateTimeKind.Unspecified) },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), true, new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 1, 5, 9, 10, 30, 0, DateTimeKind.Unspecified), "admin1@gmail.com", "Admin", "m", "1", "de", "de", "138a", "$2a$11$P28XZnEbbX7ejXUvz7XTPu540gyS61fEPlFmOkgJCVkTzTWyqiH4O", null, "53698", new Guid("54a130d2-502f-4cf1-a376-63edeb000001"), null, null, 1, "{}", "Bonnstr.", "mr", null, null, new DateTime(2020, 4, 1, 9, 10, 30, 0, DateTimeKind.Unspecified) },
+                    { new Guid("00000000-0000-0000-0000-000000000006"), false, new DateTime(2000, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 1, 7, 9, 10, 30, 0, DateTimeKind.Unspecified), "user1@gmail.com", "User", "m", "1", "en", "de", "137c", "$2a$11$w7qfN0qj/PwUzj7hmeB.i.VURxAn2S18v6YsAjNzNzELRkMNNLyCu", null, null, new Guid("54a130d2-502f-4cf1-a376-63edeb000002"), null, null, 2, "{}", "Alexstr.", "mr", null, null, null }
                 });
 
             migrationBuilder.InsertData(
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "cities",
                 columns: new[] { "id", "country_id", "name" },
                 values: new object[,]
@@ -297,43 +297,43 @@ namespace WebApi.Migrations.Auth
 
             migrationBuilder.CreateIndex(
                 name: "accounts_gender_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 column: "gender_id");
 
             migrationBuilder.CreateIndex(
                 name: "accounts_locale_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 column: "locale_id");
 
             migrationBuilder.CreateIndex(
                 name: "accounts_nationality_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 column: "nationality_id");
 
             migrationBuilder.CreateIndex(
                 name: "accounts_profession_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 column: "profession_id");
 
             migrationBuilder.CreateIndex(
                 name: "accounts_title_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "accounts",
                 column: "title_id");
 
             migrationBuilder.CreateIndex(
                 name: "cities_country_id_foreign",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "cities",
                 column: "country_id");
 
             migrationBuilder.CreateIndex(
                 name: "FK_RefreshToken_Accounts_AccountId",
-                schema: "WebApidbo",
+                schema: "AuthDBO",
                 table: "refresh_tokens",
                 column: "account_id");
         }
@@ -342,39 +342,39 @@ namespace WebApi.Migrations.Auth
         {
             migrationBuilder.DropTable(
                 name: "cities",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "refresh_tokens",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "countries",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "accounts",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "genders",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "locales",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "nationalities",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "professions",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
 
             migrationBuilder.DropTable(
                 name: "titles",
-                schema: "WebApidbo");
+                schema: "AuthDBO");
         }
     }
 }
