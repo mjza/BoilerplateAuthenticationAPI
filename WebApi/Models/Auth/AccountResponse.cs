@@ -6,7 +6,6 @@ namespace WebApi.Models.Auth
     {
         public Guid Id { get; set; }
         public string TitleId { get; set; }
-        public string LocaleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

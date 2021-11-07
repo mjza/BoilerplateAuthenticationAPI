@@ -26,7 +26,6 @@ namespace WebApi.Helpers.Auth
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<Title> Titles { get; set; }
-        public virtual DbSet<Locale> Locales { get; set; }
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
@@ -35,9 +34,6 @@ namespace WebApi.Helpers.Auth
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("accounts", "AuthDBO");
-
-                entity.HasIndex(e => e.LocaleId)
-                    .HasDatabaseName("accounts_locale_id_foreign");
 
                 entity.HasIndex(e => e.TitleId)
                    .HasDatabaseName("accounts_title_id_foreign");
@@ -82,12 +78,6 @@ namespace WebApi.Helpers.Auth
                 entity.Property(e => e.TitleId)
                    .HasColumnName("title_id")
                    .HasMaxLength(5);
-
-                entity.Property(e => e.LocaleId)
-                    .IsRequired()
-                    .HasColumnName("locale_id")
-                    .HasMaxLength(5)
-                    .HasDefaultValueSql("(N'en')");
 
                 entity.Property(e => e.Birthday)
                     .HasColumnName("birthday")
@@ -161,11 +151,6 @@ namespace WebApi.Helpers.Auth
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.TitleId)
                     .HasConstraintName("accounts$accounts_title_id_foreign");
-
-                entity.HasOne(d => d.Locale)
-                    .WithMany(p => p.Accounts)
-                    .HasForeignKey(d => d.LocaleId)
-                    .HasConstraintName("accounts$accounts_locale_id_foreign");
 
                 entity.HasOne(d => d.Gender)
                     .WithMany(p => p.Accounts)
@@ -266,18 +251,6 @@ namespace WebApi.Helpers.Auth
             modelBuilder.Entity<Title>(entity =>
             {
                 entity.ToTable("titles", "AuthDBO");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasMaxLength(5);
-
-                entity.Property(e => e.Name)
-                    .HasColumnName("name");
-            });
-
-            modelBuilder.Entity<Locale>(entity =>
-            {
-                entity.ToTable("locales", "AuthDBO");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")

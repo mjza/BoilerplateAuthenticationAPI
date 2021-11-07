@@ -11,10 +11,6 @@ namespace WebApi.Extensions.Auth
 
         public static void Seed(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Locale>().HasData(
-                new Locale { Id = "de", Name = "Deutsch" },
-                new Locale { Id = "en", Name = "English" }
-            );
 
             modelBuilder.Entity<Title>().HasData(
                 new Title { Id = "mr", Name = "Mr." },
@@ -63,7 +59,6 @@ namespace WebApi.Extensions.Auth
                     PasswordHash = BC.HashPassword("Qwert56789"),
                     AcceptTerms = true,
                     TitleId = "mr",
-                    LocaleId = "en",
                     GenderId = "m",
                     Birthday = Convert.ToDateTime("1985-05-15"),
                     Settings = "{}",
@@ -89,7 +84,6 @@ namespace WebApi.Extensions.Auth
                     PasswordHash = BC.HashPassword("Qwert56789"),
                     AcceptTerms = true,
                     TitleId = "mr",
-                    LocaleId = "de",
                     GenderId = "m",
                     Birthday = Convert.ToDateTime("1985-05-15"),
                     Settings = "{}",
@@ -115,7 +109,6 @@ namespace WebApi.Extensions.Auth
                     PasswordHash = BC.HashPassword("Qwert56789"),
                     AcceptTerms = false,
                     TitleId = "mr",
-                    LocaleId = "en",
                     GenderId = "m",
                     Birthday = Convert.ToDateTime("2000-01-15"),
                     Settings = "{}",

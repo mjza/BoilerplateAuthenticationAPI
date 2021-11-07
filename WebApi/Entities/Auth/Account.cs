@@ -24,7 +24,6 @@ namespace WebApi.Entities.Auth
         public string NationalityId { get; set; }
         public Guid? ProfessionId { get; set; }        
         public bool? AcceptTerms { get; set; }
-        public string LocaleId { get; set; }
         public Role Role { get; set; }       
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
@@ -32,8 +31,7 @@ namespace WebApi.Entities.Auth
         public string Number { get; set; }
         public string PostCode { get; set; }
         public virtual Title Title { get; set; }
-        public virtual Gender Gender { get; set; }        
-        public virtual Locale Locale { get; set; }
+        public virtual Gender Gender { get; set; }
         public virtual Nationality Nationality { get; set; }
         public virtual Profession Profession { get; set; }
         [IgnoreDataMember]

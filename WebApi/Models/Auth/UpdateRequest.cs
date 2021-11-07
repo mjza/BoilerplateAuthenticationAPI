@@ -11,7 +11,6 @@ namespace WebApi.Models.Auth
         private string _role;
         private string _email;
         public string TitleId { get; set; }
-        public string LocaleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -55,7 +54,7 @@ namespace WebApi.Models.Auth
         public string Number { get; set; }
 
         public string PostCode { get; set; }
-
+        
         // helpers
         private static string ReplaceEmptyWithNull(string value)
         {
