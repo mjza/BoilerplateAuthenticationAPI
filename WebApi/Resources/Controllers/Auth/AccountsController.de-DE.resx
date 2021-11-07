@@ -158,7 +158,7 @@
     <comment>Token is valid.</comment>
   </data>
   <data name="Unauthorized" xml:space="preserve">
-    <value>Unauthorized</value>
+    <value>Nicht autorisiert</value>
     <comment>Unauthorized</comment>
   </data>
   <data name="VerificationSuccessful" xml:space="preserve">
