@@ -12,6 +12,8 @@ using System.Text;
 using WebApi.Entities.Auth;
 using WebApi.Helpers.Auth;
 using WebApi.Models.Auth;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
 
 namespace WebApi.Services.Auth
 {
@@ -39,17 +41,20 @@ namespace WebApi.Services.Auth
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
         private readonly IEmailService _emailService;
+        private readonly IStringLocalizer<AccountService> _localizer;
 
         public AccountService(
             AccountDbContext accountDbContext,
             IMapper mapper,
             IOptions<AppSettings> appSettings,
-            IEmailService emailService)
+            IEmailService emailService,
+            IStringLocalizer<AccountService> localizer)
         {
             _accountDbContext = accountDbContext;
             _mapper = mapper;
             _appSettings = appSettings.Value;
             _emailService = emailService;
+            _localizer = localizer;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
@@ -57,7 +62,7 @@ namespace WebApi.Services.Auth
             var account = _accountDbContext.Accounts.SingleOrDefault(x => x.Email == model.Email);
 
             if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
-                throw new AppException("Email or password is incorrect");
+                throw new AppException(_localizer["EmailPassIncorrect"].Value);
 
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = GenerateJwtToken(account);
@@ -147,7 +152,7 @@ namespace WebApi.Services.Auth
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(x => x.VerificationToken == token);
 
-            if (account == null) throw new AppException("Verification failed");
+            if (account == null) throw new AppException(_localizer["VerificationFailed"].Value);
 
             account.VerifiedAt = DateTime.UtcNow;
             account.VerificationToken = null;
@@ -166,7 +171,7 @@ namespace WebApi.Services.Auth
             // check if the account is already verified or not 
             if (account.IsVerified)
             {
-                throw new AppException("This email address is already verified.");
+                throw new AppException(_localizer["EmailVerified"].Value);
             }
 
             account.VerificationToken = RandomTokenString();
@@ -203,7 +208,7 @@ namespace WebApi.Services.Auth
                 x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
-                throw new AppException("Invalid token");
+                throw new AppException(_localizer["InvalidToken"].Value);
         }
 
         public void ResetPassword(ResetPasswordRequest model)
@@ -213,7 +218,7 @@ namespace WebApi.Services.Auth
                 x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
-                throw new AppException("Invalid token");
+                throw new AppException(_localizer["InvalidToken"].Value);
 
             // update password and remove reset token
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -241,7 +246,7 @@ namespace WebApi.Services.Auth
         {
             // validate
             if (_accountDbContext.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException($"Email '{model.Email}' is already registered");
+                throw new AppException(_localizer["EmailRegistered", model.Email].Value);
 
             // map model to new account object
             var account = _mapper.Map<Account>(model);
@@ -264,7 +269,7 @@ namespace WebApi.Services.Auth
 
             // validate
             if (account.Email != model.Email && _accountDbContext.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException($"Email '{model.Email}' is already taken");
+                throw new AppException(_localizer["EmailTaken", model.Email].Value);
 
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
@@ -291,16 +296,16 @@ namespace WebApi.Services.Auth
         private Account GetAccount(Guid id)
         {
             var account = _accountDbContext.Accounts.Find(id);
-            if (account == null) throw new KeyNotFoundException("Account not found");
+            if (account == null) throw new KeyNotFoundException(_localizer["AccountNotFound"].Value);
             return account;
         }
 
         private (RefreshToken, Account) GetRefreshToken(string token)
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
-            if (account == null) throw new AppException("Invalid token");
+            if (account == null) throw new AppException(_localizer["InvalidToken"].Value);
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
-            if (!refreshToken.IsActive) throw new AppException("Invalid token");
+            if (!refreshToken.IsActive) throw new AppException(_localizer["InvalidToken"].Value);
             return (refreshToken, account);
         }
 
@@ -347,65 +352,62 @@ namespace WebApi.Services.Auth
 
         private void SendVerificationEmail(Account account, string origin)
         {
-            string message;
+            string message, uri, token = account.VerificationToken, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
-            {
-                var verifyUrl = $"{origin}/account/verify-email?token={account.VerificationToken}";
-                message = $@"<p>Please click the below link to verify your email address:</p>
-                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
+            {                
+                uri = $"{origin}/{culture}/Accounts/verify-email?token={token}";
+                message = _localizer["VerifyLink", uri];
             }
             else
             {
-                message = $@"<p>Please use the below token to verify your email address with the <code>/accounts/verify-email</code> api route:</p>
-                             <p><code>{account.VerificationToken}</code></p>";
+                uri = $"/{culture}/Accounts/verify-email";
+                message = _localizer["VerifyInstruction", uri, token];
             }
 
             _emailService.Send(
                 to: account.Email,
-                subject: "Sign-up Verification API - Verify Email",
-                html: $@"<h4>Verify Email</h4>
-                         <p>Thanks for registering!</p>
-                         {message}"
+                subject: _localizer["VerifyEmailSubject"],
+                html: _localizer["VerifyEmailHeader"] + message
             );
         }
 
         private void SendAlreadyRegisteredEmail(string email, string origin)
         {
-            string message;
-            if (!string.IsNullOrEmpty(origin))
-                message = $@"<p>If you don't know your password please visit the <a href=""{origin}/account/forgot-password"">forgot password</a> page.</p>";
-            else
-                message = "<p>If you don't know your password you can reset it via the <code>/accounts/forgot-password</code> api route.</p>";
-
+            string message, uri, culture = CultureInfo.CurrentCulture.Name;
+            if (!string.IsNullOrEmpty(origin)){
+                uri = $"{origin}/{culture}/Accounts/forgot-password";
+                message = _localizer["AlreadyRegisteredEmail", uri];
+            }
+            else {
+                uri = $"/{culture}/Accounts/forgot-password";
+                message = _localizer["AlreadyRegisteredInstruction", uri];
+            }
+            
             _emailService.Send(
                 to: email,
-                subject: "Sign-up Verification API - Email Already Registered",
-                html: $@"<h4>Email Already Registered</h4>
-                         <p>Your email <strong>{email}</strong> is already registered.</p>
-                         {message}"
+                subject: _localizer["AlreadyRegisteredEmailSubject"],
+                html: _localizer["AlreadyRegisteredEmailHeader", email] + message
             );
         }
 
         private void SendPasswordResetEmail(Account account, string origin)
         {
-            string message;
+            string message, uri, token = account.ResetToken, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
             {
-                var resetUrl = $"{origin}/account/reset-password?token={account.ResetToken}";
-                message = $@"<p>Please click the below link to reset your password, the link will be valid for 1 day:</p>
-                             <p><a href=""{resetUrl}"">{resetUrl}</a></p>";
+                uri = $"{origin}/{culture}/Accounts/reset-password?token={token}";
+                message = _localizer["PasswordResetLink", uri];
             }
             else
             {
-                message = $@"<p>Please use the below token to reset your password with the <code>/accounts/reset-password</code> api route:</p>
-                             <p><code>{account.ResetToken}</code></p>";
+                uri = $"/{culture}/Accounts/reset-password";
+                message = _localizer["PasswordResetInstruction", uri, token];
             }
 
             _emailService.Send(
                 to: account.Email,
-                subject: "Sign-up Verification API - Reset Password",
-                html: $@"<h4>Reset Password Email</h4>
-                         {message}"
+                subject: _localizer["PasswordResetEmailSubject"],
+                html: _localizer["PasswordResetEmailHeader"] + message
             );
         }
     }

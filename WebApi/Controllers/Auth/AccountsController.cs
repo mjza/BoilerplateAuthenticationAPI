@@ -85,14 +85,23 @@ namespace WebApi.Controllers.Auth
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest model)
         {
-            try { 
-            _accountService.Register(model, Request.Headers["origin"]);
-            return Ok(new MessageRecord(_localizer["RegistrationSuccessful"].Value));
+            try
+            {
+                _accountService.Register(model, Request.Headers["origin"]);
+                return Ok(new MessageRecord(_localizer["RegistrationSuccessful"].Value));
             }
             catch (AppException e)
             {
                 return Problem(e.Message, null, e.StatusCode, null, e.Type);
             }
+        }
+
+        [HttpGet("verify-email")]
+        public IActionResult VerifyEmail(string token)
+        {
+            VerifyEmailRequest model = new();
+            model.Token = token;
+            return this.VerifyEmail(model);
         }
 
         [HttpPost("verify-email")]
