@@ -118,39 +118,51 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountDeleteSuccessful" xml:space="preserve">
-    <value>Account has been deleted successfully.</value>
+    <value>Your account has been deleted successfully.</value>
+    <comment>Your account has been deleted successfully.</comment>
   </data>
   <data name="BadRequest" xml:space="preserve">
     <value>Bad Request</value>
+    <comment>Bad Request</comment>
   </data>
   <data name="CheckEmailPasswordReset" xml:space="preserve">
     <value>Please check your email for password reset instructions.</value>
+    <comment>Please check your email for password reset instructions.</comment>
   </data>
   <data name="CheckEmailVerification" xml:space="preserve">
     <value>Please check your email for new verification token.</value>
+    <comment>Please check your email for new verification token.</comment>
   </data>
   <data name="OthersAccountUpdate" xml:space="preserve">
-    <value>You are not allowed to update others account.</value>
+    <value>You are not allowed to update others' accounts.</value>
+    <comment>You are not allowed to update others' accounts.</comment>
   </data>
   <data name="PasswordResetSuccessful" xml:space="preserve">
-    <value>Password has been reseted successful, you can now login.</value>
+    <value>Your password has been reseted successful, you can now login.</value>
+    <comment>Your password has been reseted successful, you can now login.</comment>
   </data>
   <data name="RegistrationSuccessful" xml:space="preserve">
-    <value>Registration successful, please check your email for verification instructions.</value>
+    <value>Registration has been done successfully, please check your email for verification instructions.</value>
+    <comment>Registration has been done successfully, please check your email for verification instructions.</comment>
   </data>
   <data name="TokenRequired" xml:space="preserve">
     <value>Token is required.</value>
+    <comment>Token is required.</comment>
   </data>
   <data name="TokenRevoked" xml:space="preserve">
     <value>Token is revoked.</value>
+    <comment>Token is revoked.</comment>
   </data>
   <data name="TokenValid" xml:space="preserve">
     <value>Token is valid.</value>
+    <comment>Token is valid.</comment>
   </data>
   <data name="Unauthorized" xml:space="preserve">
     <value>Unauthorized</value>
+    <comment>Unauthorized</comment>
   </data>
   <data name="VerificationSuccessful" xml:space="preserve">
-    <value>Verification successful, you can now login.</value>
+    <value>Verification has been done successfully, you can now login.</value>
+    <comment>Verification has been done successfully, you can now login.</comment>
   </data>
 </root>

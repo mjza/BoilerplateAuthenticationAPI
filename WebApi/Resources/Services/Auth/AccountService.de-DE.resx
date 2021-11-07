@@ -117,52 +117,90 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AccountDeleteSuccessful" xml:space="preserve">
-    <value>Your account has been deleted successfully.</value>
-    <comment>Your account has been deleted successfully.</comment>
+  <data name="AccountNotFound" xml:space="preserve">
+    <value>Account not found</value>
+    <comment>Account not found</comment>
   </data>
-  <data name="BadRequest" xml:space="preserve">
-    <value>Bad Request</value>
-    <comment>Bad Request</comment>
+  <data name="AlreadyRegisteredEmail" xml:space="preserve">
+    <value>&lt;p&gt;If you don't know your password please visit the &lt;a href="{0}"&gt;forgot password&lt;/a&gt; page.&lt;/p&gt;</value>
+    <comment>&lt;p&gt;If you don't know your password please visit the &lt;a href="{0}"&gt;forgot password&lt;/a&gt; page.&lt;/p&gt;</comment>
   </data>
-  <data name="CheckEmailPasswordReset" xml:space="preserve">
-    <value>Please check your email for password reset instructions.</value>
-    <comment>Please check your email for password reset instructions.</comment>
+  <data name="AlreadyRegisteredEmailHeader" xml:space="preserve">
+    <value>&lt;h4&gt;Email Already Registered&lt;/h4&gt;
+&lt;p&gt;Your email &lt;strong&gt;{0}&lt;/strong&gt; is already registered.&lt;/p&gt;</value>
+    <comment>&lt;h4&gt;Email Already Registered&lt;/h4&gt;
+&lt;p&gt;Your email &lt;strong&gt;{0}&lt;/strong&gt; is already registered.&lt;/p&gt;</comment>
   </data>
-  <data name="CheckEmailVerification" xml:space="preserve">
-    <value>Please check your email for new verification token.</value>
-    <comment>Please check your email for new verification token.</comment>
+  <data name="AlreadyRegisteredEmailSubject" xml:space="preserve">
+    <value>Sign-up Verification API - Email Already Registered</value>
+    <comment>Sign-up Verification API - Email Already Registered</comment>
   </data>
-  <data name="OthersAccountUpdate" xml:space="preserve">
-    <value>You are not allowed to update others' accounts.</value>
-    <comment>You are not allowed to update others' accounts.</comment>
+  <data name="AlreadyRegisteredInstruction" xml:space="preserve">
+    <value>&lt;p&gt;If you don't know your password you can reset it via the &lt;code&gt;{0}&lt;/code&gt; api route.&lt;/p&gt;</value>
+    <comment>&lt;p&gt;If you don't know your password you can reset it via the &lt;code&gt;{0}&lt;/code&gt; api route.&lt;/p&gt;</comment>
   </data>
-  <data name="PasswordResetSuccessful" xml:space="preserve">
-    <value>Your password has been reseted successful, you can now login.</value>
-    <comment>Your password has been reseted successful, you can now login.</comment>
+  <data name="EmailPassIncorrect" xml:space="preserve">
+    <value>Email or password is incorrect.</value>
+    <comment>Email or password is incorrect.</comment>
   </data>
-  <data name="RegistrationSuccessful" xml:space="preserve">
-    <value>Registration has been done successfully, please check your email for verification instructions.</value>
-    <comment>Registration has been done successfully, please check your email for verification instructions.</comment>
+  <data name="EmailRegistered" xml:space="preserve">
+    <value>Email '{0}' is already registered.</value>
+    <comment>Email '{0}' is already registered.</comment>
   </data>
-  <data name="TokenRequired" xml:space="preserve">
-    <value>Token is required.</value>
-    <comment>Token is required.</comment>
+  <data name="EmailTaken" xml:space="preserve">
+    <value>Email '{0}' is already taken.</value>
+    <comment>Email '{0}' is already taken.</comment>
   </data>
-  <data name="TokenRevoked" xml:space="preserve">
-    <value>Token is revoked.</value>
-    <comment>Token is revoked.</comment>
+  <data name="EmailVerified" xml:space="preserve">
+    <value>This email address is already verified.</value>
+    <comment>This email address is already verified.</comment>
   </data>
-  <data name="TokenValid" xml:space="preserve">
-    <value>Token is valid.</value>
-    <comment>Token is valid.</comment>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Invalid token</value>
+    <comment>Invalid token</comment>
   </data>
-  <data name="Unauthorized" xml:space="preserve">
-    <value>Unauthorized</value>
-    <comment>Unauthorized</comment>
+  <data name="PasswordResetEmailHeader" xml:space="preserve">
+    <value>&lt;h4&gt;Reset Password Email&lt;/h4&gt;</value>
+    <comment>&lt;h4&gt;Reset Password Email&lt;/h4&gt;</comment>
   </data>
-  <data name="VerificationSuccessful" xml:space="preserve">
-    <value>Verification has been done successfully, you can now login.</value>
-    <comment>Verification has been done successfully, you can now login.</comment>
+  <data name="PasswordResetEmailSubject" xml:space="preserve">
+    <value>Sign-up Verification API - Reset Password</value>
+    <comment>Sign-up Verification API - Reset Password</comment>
+  </data>
+  <data name="PasswordResetInstruction" xml:space="preserve">
+    <value>&lt;p&gt;Please use the below token to reset your password with the &lt;code&gt;{0}&lt;/code&gt; api route:&lt;/p&gt;&lt;p&gt;&lt;code&gt;{1}&lt;/code&gt;&lt;/p&gt;</value>
+    <comment>&lt;p&gt;Please use the below token to reset your password with the &lt;code&gt;{0}&lt;/code&gt; api route:&lt;/p&gt;&lt;p&gt;&lt;code&gt;{1}&lt;/code&gt;&lt;/p&gt;</comment>
+  </data>
+  <data name="PasswordResetLink" xml:space="preserve">
+    <value>&lt;p&gt;Please click the below link to reset your password, the link will be valid for 1 day:&lt;/p&gt;
+&lt;p&gt;&lt;a href="{0}"&gt;{0}&lt;/a&gt;&lt;/p&gt;</value>
+    <comment>&lt;p&gt;Please click the below link to reset your password, the link will be valid for 1 day:&lt;/p&gt;
+&lt;p&gt;&lt;a href="{0}"&gt;{0}&lt;/a&gt;&lt;/p&gt;</comment>
+  </data>
+  <data name="VerificationFailed" xml:space="preserve">
+    <value>Verification has been failed.</value>
+    <comment>Verification has been failed.</comment>
+  </data>
+  <data name="VerifyEmailHeader" xml:space="preserve">
+    <value>&lt;h4&gt;Verify Email&lt;/h4&gt;
+&lt;p&gt;Thanks for registering!&lt;/p&gt;</value>
+    <comment>&lt;h4&gt;Verify Email&lt;/h4&gt;
+&lt;p&gt;Thanks for registering!&lt;/p&gt;</comment>
+  </data>
+  <data name="VerifyEmailSubject" xml:space="preserve">
+    <value>Sign-up Verification API - Verify Email</value>
+    <comment>Sign-up Verification API - Verify Email</comment>
+  </data>
+  <data name="VerifyInstruction" xml:space="preserve">
+    <value>&lt;p&gt;Please use the below token to verify your email address with the &lt;code&gt;{0}&lt;/code&gt; api route:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;{1}&lt;/code&gt;&lt;/p&gt;</value>
+    <comment>&lt;p&gt;Please use the below token to verify your email address with the &lt;code&gt;{0}&lt;/code&gt; api route:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;{1}&lt;/code&gt;&lt;/p&gt;</comment>
+  </data>
+  <data name="VerifyLink" xml:space="preserve">
+    <value>&lt;p&gt;Please click the below link to verify your email address:&lt;/p&gt;
+&lt;p&gt;&lt;a href="{0}"&gt;{0}&lt;/a&gt;&lt;/p&gt;</value>
+    <comment>&lt;p&gt;Please click the below link to verify your email address:&lt;/p&gt;
+&lt;p&gt;&lt;a href="{0}"&gt;{0}&lt;/a&gt;&lt;/p&gt;</comment>
   </data>
 </root>
