@@ -4,12 +4,12 @@ namespace WebApi.Models.Auth
 {
     public class AuthenticateRequest
     {
-        [Required]
+        [Required(ErrorMessage = "FieldRequired")]
         [EmailAddress]
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "FieldRequired")]
         public string Password { get; set; }
     }
 }

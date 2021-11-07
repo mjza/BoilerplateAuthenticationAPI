@@ -81,6 +81,12 @@ namespace WebApi.Extensions
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
+            services.AddMvc()
+                    .AddDataAnnotationsLocalization(options => {
+                        options.DataAnnotationLocalizerProvider = (type, factory) =>
+                            factory.Create(typeof(SharedResource));
+                    });
+
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {

@@ -10,8 +10,14 @@ namespace WebApi.Models.Auth
         private string _confirmPassword;
         private string _role;
         private string _email;
+
+        [StringLength(5, ErrorMessage = "StringMaxLength")]
         public string TitleId { get; set; }
+
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string FirstName { get; set; }
+
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string LastName { get; set; }
 
         [EnumDataType(typeof(Role))]
@@ -21,7 +27,8 @@ namespace WebApi.Models.Auth
             set => _role = ReplaceEmptyWithNull(value);
         }
 
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "EmailAddress")]
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string Email
         {
             get => _email;
@@ -29,30 +36,35 @@ namespace WebApi.Models.Auth
         }
 
         [RegularExpression(@"^(?=.*[a-zäöü])(?=.*[A-ZÄÖÜß])(?=.*\d)[a-zäöüA-ZÄÖÜß0-9\s!@#$%^&*§\/\? '+=)(<>;,.:_°`´-]{8,30}$",
-            ErrorMessage = "The Password field must contain 8 to 30 characters, minimum 1 lowecase, minumum 1 upercase, minimum 1 digits, and can have symbols.")]
+            ErrorMessage = "PasswordRegularExpression")]
         public string Password
         {
             get => _password;
             set => _password = ReplaceEmptyWithNull(value);
         }
 
-        [Compare("Password")]
+        [Compare("Password", ErrorMessage = "PasswordCompare")]
         public string ConfirmPassword 
         {
             get => _confirmPassword;
             set => _confirmPassword = ReplaceEmptyWithNull(value);
         }
 
+        [DataType(DataType.Date, ErrorMessage = "DateDataType")]
         public DateTime? Birthday { get; set; }
 
+        [StringLength(5, ErrorMessage = "StringMaxLength")]
         public string GenderId { get; set; }
 
         public string Settings { get; set; }
 
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string Street { get; set; }
 
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string Number { get; set; }
 
+        [StringLength(255, ErrorMessage = "StringMaxLength")]
         public string PostCode { get; set; }
         
         // helpers

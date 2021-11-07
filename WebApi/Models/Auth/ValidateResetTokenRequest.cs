@@ -4,7 +4,7 @@ namespace WebApi.Models.Auth
 {
     public class ValidateResetTokenRequest
     {
-        [Required]
+        [Required(ErrorMessage = "FieldRequired")]
         public string Token { get; set; }
     }
 }

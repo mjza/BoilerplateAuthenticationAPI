@@ -62,7 +62,7 @@ namespace WebApi.Services.Auth
             var account = _accountDbContext.Accounts.SingleOrDefault(x => x.Email == model.Email);
 
             if (account == null || !account.IsVerified || !BC.Verify(model.Password, account.PasswordHash))
-                throw new AppException(_localizer["EmailPassIncorrect"].Value);
+                throw new AppException(_localizer["EmailPassIncorrect"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
 
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = GenerateJwtToken(account);
@@ -152,7 +152,7 @@ namespace WebApi.Services.Auth
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(x => x.VerificationToken == token);
 
-            if (account == null) throw new AppException(_localizer["VerificationFailed"].Value);
+            if (account == null) throw new AppException(_localizer["VerificationFailed"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
 
             account.VerifiedAt = DateTime.UtcNow;
             account.VerificationToken = null;
@@ -171,7 +171,7 @@ namespace WebApi.Services.Auth
             // check if the account is already verified or not 
             if (account.IsVerified)
             {
-                throw new AppException(_localizer["EmailVerified"].Value);
+                throw new AppException(_localizer["EmailVerified"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
             }
 
             account.VerificationToken = RandomTokenString();
@@ -208,7 +208,7 @@ namespace WebApi.Services.Auth
                 x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
-                throw new AppException(_localizer["InvalidToken"].Value);
+                throw new AppException(_localizer["InvalidToken"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
         }
 
         public void ResetPassword(ResetPasswordRequest model)
@@ -218,7 +218,7 @@ namespace WebApi.Services.Auth
                 x.ResetTokenExpiresAt > DateTime.UtcNow);
 
             if (account == null)
-                throw new AppException(_localizer["InvalidToken"].Value);
+                throw new AppException(_localizer["InvalidToken"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
 
             // update password and remove reset token
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -246,7 +246,7 @@ namespace WebApi.Services.Auth
         {
             // validate
             if (_accountDbContext.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException(_localizer["EmailRegistered", model.Email].Value);
+                throw new AppException(_localizer["EmailRegistered", model.Email].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
 
             // map model to new account object
             var account = _mapper.Map<Account>(model);
@@ -269,7 +269,7 @@ namespace WebApi.Services.Auth
 
             // validate
             if (account.Email != model.Email && _accountDbContext.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException(_localizer["EmailTaken", model.Email].Value);
+                throw new AppException(_localizer["EmailTaken", model.Email].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
 
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
@@ -303,9 +303,9 @@ namespace WebApi.Services.Auth
         private (RefreshToken, Account) GetRefreshToken(string token)
         {
             var account = _accountDbContext.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
-            if (account == null) throw new AppException(_localizer["InvalidToken"].Value);
+            if (account == null) throw new AppException(_localizer["InvalidToken"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
-            if (!refreshToken.IsActive) throw new AppException(_localizer["InvalidToken"].Value);
+            if (!refreshToken.IsActive) throw new AppException(_localizer["InvalidToken"].Value, 400, "BadRequest", _localizer["BadRequest"].Value);
             return (refreshToken, account);
         }
 
@@ -336,8 +336,8 @@ namespace WebApi.Services.Auth
 
         private void RemoveOldRefreshTokens(Account account)
         {
-            account.RefreshTokens.RemoveAll(x => 
-                !x.IsActive && 
+            account.RefreshTokens.RemoveAll(x =>
+                !x.IsActive &&
                 x.CreatedAt.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
         }
 
@@ -354,7 +354,7 @@ namespace WebApi.Services.Auth
         {
             string message, uri, token = account.VerificationToken, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
-            {                
+            {
                 uri = $"{origin}/{culture}/Accounts/verify-email?token={token}";
                 message = _localizer["VerifyLink", uri];
             }
@@ -374,15 +374,17 @@ namespace WebApi.Services.Auth
         private void SendAlreadyRegisteredEmail(string email, string origin)
         {
             string message, uri, culture = CultureInfo.CurrentCulture.Name;
-            if (!string.IsNullOrEmpty(origin)){
+            if (!string.IsNullOrEmpty(origin))
+            {
                 uri = $"{origin}/{culture}/Accounts/forgot-password";
                 message = _localizer["AlreadyRegisteredEmail", uri];
             }
-            else {
+            else
+            {
                 uri = $"/{culture}/Accounts/forgot-password";
                 message = _localizer["AlreadyRegisteredInstruction", uri];
             }
-            
+
             _emailService.Send(
                 to: email,
                 subject: _localizer["AlreadyRegisteredEmailSubject"],

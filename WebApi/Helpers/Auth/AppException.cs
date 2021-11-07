@@ -29,22 +29,14 @@ namespace WebApi.Helpers.Auth
             set { type = value; }
         }
 
-
-        public AppException() : base()
-        {
-            statusCode = 400;
-            title = "Bad Request";
-            type = "BadRequest";
-        }
-
-        public AppException(string message, int statusCode = 400, string type = "BadRequest", string title = "Bad Request") : base(message)
+        public AppException(string message, int statusCode, string type, string title) : base(message)
         {
             this.statusCode = statusCode;
             this.type = type;
             this.title = title;
         }
 
-        public AppException(string message, int statusCode = 400, string type = "BadRequest", string title = "Bad Request", params object[] args)
+        public AppException(string message, int statusCode, string type, string title, params object[] args)
             : base(String.Format(CultureInfo.CurrentCulture, message, args))
         {
             this.statusCode = statusCode;
