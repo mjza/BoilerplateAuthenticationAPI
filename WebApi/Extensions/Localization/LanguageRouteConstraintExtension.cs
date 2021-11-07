@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace WebApi.Extensions.Localization
@@ -14,7 +15,8 @@ namespace WebApi.Extensions.Localization
                 return false;
 
             var culture = values["culture"].ToString();
-            return culture == "en-US" || culture == "de-DE";            
+
+            return Array.Exists(Culture.list, element => element == culture);           
         }
     }
 }

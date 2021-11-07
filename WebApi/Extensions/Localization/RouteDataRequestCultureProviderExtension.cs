@@ -14,11 +14,8 @@ namespace WebApi.Extensions.Localization
         {
             if (httpContext == null)
                 throw new ArgumentNullException(nameof(httpContext));
-
-            string culture = null;
-            string uiCulture = null;
-
-            culture = uiCulture = httpContext.Request.Path.Value.Split('/')[IndexOfCulture]?.ToString();
+            string uiCulture;
+            string culture = uiCulture = httpContext.Request.Path.Value.Split('/')[IndexOfCulture]?.ToString();
 
             var providerResultCulture = new ProviderCultureResult(culture, uiCulture);
 

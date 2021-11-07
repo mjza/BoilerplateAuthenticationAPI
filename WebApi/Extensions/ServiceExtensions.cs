@@ -84,13 +84,14 @@ namespace WebApi.Extensions
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {
-                    var supportedCultures = new List<CultureInfo>
+                    var supportedCultures = new List<CultureInfo>();
+                    
+                    foreach (string culture in Culture.list)
                     {
-                        new CultureInfo("en-US"),
-                        new CultureInfo("de-DE")
-                    };
+                        supportedCultures.Add(new CultureInfo(culture));
+                    }
 
-                    options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+                    options.DefaultRequestCulture = new RequestCulture(culture: Culture.list[0], uiCulture: Culture.list[0]);
                     options.SupportedCultures = supportedCultures;
                     options.SupportedUICultures = supportedCultures;
                     options.RequestCultureProviders = new[] { new RouteDataRequestCultureProviderExtension { IndexOfCulture = 1, IndexofUICulture = 1 } };
