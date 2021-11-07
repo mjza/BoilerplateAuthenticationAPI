@@ -128,7 +128,7 @@ namespace WebApi.Services.Auth
 
             // first registered account is an admin
             var isFirstAccount = !_accountDbContext.Accounts.Any();
-            account.Role = isFirstAccount ? Role.Admin : Role.User;
+            account.Role = isFirstAccount ? Role.Super : Role.User;
             account.CreatedAt = DateTime.UtcNow;
             account.VerificationToken = RandomTokenString();
 

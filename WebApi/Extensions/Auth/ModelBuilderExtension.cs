@@ -6,7 +6,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace WebApi.Extensions.Auth
 {
-    public static class ModelBuilderExtensions
+    public static class ModelBuilderExtension
     {
 
         public static void Seed(this ModelBuilder modelBuilder)

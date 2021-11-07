@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using WebApi.Entities.Auth;
@@ -10,20 +11,24 @@ using WebApi.Services.Auth;
 namespace WebApi.Controllers.Auth
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("{culture:culture}/[controller]")]
+    [Produces("application/json")]
     public class AccountsController : BaseController
     {
+        private readonly IStringLocalizer<AccountsController> _localizer;
         private readonly IAccountService _accountService;
 
         public AccountsController(
-            IAccountService accountService)
+            IAccountService accountService,
+            IStringLocalizer<AccountsController> localizer)
         {
             _accountService = accountService;
+            _localizer = localizer;
         }
 
         [HttpPost("authenticate")]
         public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
-        {
+        {            
             try
             {
                 var response = _accountService.Authenticate(model, IpAddress());
@@ -48,7 +53,7 @@ namespace WebApi.Controllers.Auth
             }
             catch (AppException e)
             {
-                return Problem(e.Message, null, e.StatusCode, null, e.Type);
+                return Problem(e.Message, null, e.StatusCode, e.Title, e.Type);
             }
         }
 
@@ -62,14 +67,14 @@ namespace WebApi.Controllers.Auth
                 var token = model.Token ?? Request.Cookies["refreshToken"];
 
                 if (string.IsNullOrEmpty(token))
-                    return BadRequest(new { message = "Token is required" });
+                    return BadRequest(new MessageRecord(_localizer["TokenRequired"].Value));
 
                 // users can revoke their own tokens and admins can revoke any tokens
-                if (!Account.OwnsToken(token) && Account.Role != Role.Admin)
-                    return Unauthorized(new { message = "Unauthorized" });
+                if (!Account.OwnsToken(token) && Account.Role != Role.Super)
+                    return Unauthorized(new MessageRecord(_localizer["Unauthorized"].Value));
 
                 _accountService.RevokeToken(token, IpAddress());
-                return Ok(new { message = "Token revoked" });
+                return Ok(new MessageRecord(_localizer["TokenRevoked"].Value));
             }
             catch (AppException e)
             {
@@ -82,7 +87,7 @@ namespace WebApi.Controllers.Auth
         {
             try { 
             _accountService.Register(model, Request.Headers["origin"]);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            return Ok(new MessageRecord(_localizer["RegistrationSuccessful"].Value));
             }
             catch (AppException e)
             {
@@ -96,7 +101,7 @@ namespace WebApi.Controllers.Auth
             try
             {
                 _accountService.VerifyEmail(model.Token);
-                return Ok(new { message = "Verification successful, you can now login" });
+                return Ok(new MessageRecord(_localizer["VerificationSuccessful"].Value));
             }
             catch (AppException e)
             {
@@ -110,7 +115,7 @@ namespace WebApi.Controllers.Auth
             try
             {
                 _accountService.ResendVerificationToken(model, Request.Headers["origin"]);
-                return Ok(new { message = "Please check your email for new verification token." });
+                return Ok(new MessageRecord(_localizer["CheckEmailVerification"].Value));
             }
             catch (AppException e)
             {
@@ -124,7 +129,7 @@ namespace WebApi.Controllers.Auth
             try
             {
                 _accountService.ForgotPassword(model, Request.Headers["origin"]);
-                return Ok(new { message = "Please check your email for password reset instructions" });
+                return Ok(new MessageRecord(_localizer["CheckEmailPasswordReset"].Value));
             }
             catch (AppException e)
             {
@@ -138,7 +143,7 @@ namespace WebApi.Controllers.Auth
             try
             {
                 _accountService.ValidateResetToken(model);
-                return Ok(new { message = "Token is valid" });
+                return Ok(new MessageRecord(_localizer["TokenValid"].Value));
             }
             catch (AppException e)
             {
@@ -152,7 +157,7 @@ namespace WebApi.Controllers.Auth
             try
             {
                 _accountService.ResetPassword(model);
-                return Ok(new { message = "Password reset successful, you can now login" });
+                return Ok(new MessageRecord(_localizer["PasswordResetSuccessful"].Value));
             }
             catch (AppException e)
             {
@@ -160,7 +165,7 @@ namespace WebApi.Controllers.Auth
             }
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.Super)]
         [HttpGet]
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
         {
@@ -176,18 +181,18 @@ namespace WebApi.Controllers.Auth
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:guid}")]
         public ActionResult<AccountResponse> GetById(Guid id)
         {
             // users can get their own account and admins can get any account
-            if (id != Account.Id && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
+            if (id != Account.Id && Account.Role != Role.Super)
+                return Unauthorized(new MessageRecord(_localizer["Unauthorized"].Value));
 
             var account = _accountService.GetById(id);
             return Ok(account);
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.Super)]
         [HttpPost]
         public ActionResult<AccountResponse> Create(CreateRequest model)
         {
@@ -203,20 +208,23 @@ namespace WebApi.Controllers.Auth
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:guid}")]
         public ActionResult<AccountResponse> Update(Guid id, UpdateRequest model)
         {
             try
             {
                 // users can update their own account and admins can update any account
-                if (id != Account.Id && Account.Role != Role.Admin)
+                if (id != Account.Id && Account.Role != Role.Super)
                 {
                     //return Unauthorized(new { message = "Unauthorized" });
-                    throw new AppException("You are not allowed to update others account.", 401, "Unauthorized");
+                    throw new AppException(_localizer["OthersAccountUpdate"].Value, 
+                                            401, 
+                                            "Unauthorized",
+                                            _localizer["Unauthorized"].Value);
                 }
 
                 // only admins can update role
-                if (Account.Role != Role.Admin)
+                if (Account.Role != Role.Super)
                     model.Role = null;
 
                 var account = _accountService.Update(id, model);
@@ -224,26 +232,26 @@ namespace WebApi.Controllers.Auth
             }
             catch (AppException e)
             {
-                return Problem(e.Message, null, e.StatusCode, null, e.Type);
+                return Problem(e.Message, null, e.StatusCode, e.Title, e.Type);
             }
             catch (Exception e)
             {
-                return Problem(e.Message, null, 400, null, "BadRequest");
+                return Problem(e.Message, null, 400, _localizer["BadRequest"].Value, "BadRequest");
             }
         }
 
         [Authorize]
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult Delete(Guid id)
         {
             try
             {
                 // users can delete their own account and admins can delete any account
-                if (id != Account.Id && Account.Role != Role.Admin)
-                    return Unauthorized(new { message = "Unauthorized" });
+                if (id != Account.Id && Account.Role != Role.Super)
+                    return Unauthorized(new MessageRecord(_localizer["Unauthorized"].Value));
 
                 _accountService.Delete(id);
-                return Ok(new { message = "Account deleted successfully" });
+                return Ok(new MessageRecord(_localizer["AccountDeleteSuccessful"].Value));
             }
             catch (AppException e)
             {
@@ -282,4 +290,6 @@ namespace WebApi.Controllers.Auth
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
     }
+
+    internal record MessageRecord(string Message);
 }

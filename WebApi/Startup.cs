@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using WebApi.Extensions;
 using WebApi.Helpers.Auth;
@@ -24,57 +25,29 @@ namespace WebApi
         }        
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // Most of the functions here are functions in the ServicesEtenctions.cs file
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureAppSettings(Configuration);
+
             services.ConfigureDBContext(Configuration);
 
             services.ConfigureCors();
 
             services.ConfigureIISIntegration();
-            
+
+            services.ConfigureApplicationServices();
+
+            services.ConfigureSwagger();
+
+            services.ConfigureLocalization();
+
             services.AddControllers()
                     .AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true)
                     .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             
-            services.AddSwaggerGen();
-
-            // configure strongly typed settings object
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
-            // configure DI for application services
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IEmailService, EmailService>();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
-
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Scheme = "bearer",
-                    Description = "Please insert JWT token into the following field."
-                });
-
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -95,18 +68,12 @@ namespace WebApi
 
             app.UseHttpsRedirection();
 
+            var localizeOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(localizeOptions.Value);
+
             app.UseRouting();
 
-            app.UseAuthorization();
-
-            // global cors policy
-            /* // TODO Moved to services extension 
-            app.UseCors(x => x
-                .SetIsOriginAllowed(origin => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
-            */
+            app.UseAuthorization();            
 
             // global error handler
             app.UseMiddleware<ErrorHandlerMiddleware>();

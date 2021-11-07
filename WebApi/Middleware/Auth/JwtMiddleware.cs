@@ -53,7 +53,7 @@ namespace WebApi.Middleware.Auth
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var accountId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // attach account to context on successful jwt validation
                 httpContext.Items["Account"] = await accountDbContext.Accounts.FindAsync(accountId);
