@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -43,8 +44,7 @@ namespace WebApi
             services.ConfigureLocalization();
 
             services.AddControllers()
-                    .AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true)
-                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                    .AddJsonOptions(x => x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never); // It causes to have null attributes in our json responses too
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             
