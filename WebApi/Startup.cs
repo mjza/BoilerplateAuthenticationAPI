@@ -66,10 +66,11 @@ namespace WebApi
                 });
             }
 
+            app.UseHttpLogging();
+
             app.UseHttpsRedirection();
 
-            var localizeOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-            app.UseRequestLocalization(localizeOptions.Value);
+            app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
             app.UseRouting();
 

@@ -353,12 +353,12 @@ namespace WebApi.Services.Auth
             string message, uri, token = account.VerificationToken, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
             {
-                uri = $"{origin}/{culture}/Accounts/verify-email?token={token}";
+                uri = $"{origin}/{culture}/api/Accounts/verify-email?token={token}";
                 message = _localizer["VerifyLink", uri];
             }
             else
             {
-                uri = $"/{culture}/Accounts/verify-email";
+                uri = $"/{culture}/api/Accounts/verify-email";
                 message = _localizer["VerifyInstruction", uri, token];
             }
 
@@ -374,12 +374,12 @@ namespace WebApi.Services.Auth
             string message, uri, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
             {
-                uri = $"{origin}/{culture}/Accounts/forgot-password";
+                uri = $"{origin}/{culture}/api/Accounts/forgot-password";
                 message = _localizer["AlreadyRegisteredEmail", uri];
             }
             else
             {
-                uri = $"/{culture}/Accounts/forgot-password";
+                uri = $"/{culture}/api/Accounts/forgot-password";
                 message = _localizer["AlreadyRegisteredInstruction", uri];
             }
 
@@ -395,12 +395,12 @@ namespace WebApi.Services.Auth
             string message, uri, token = account.ResetToken, culture = CultureInfo.CurrentCulture.Name;
             if (!string.IsNullOrEmpty(origin))
             {
-                uri = $"{origin}/{culture}/Accounts/reset-password?token={token}";
+                uri = $"{origin}/{culture}/api/Accounts/reset-password?token={token}";
                 message = _localizer["PasswordResetLink", uri];
             }
             else
             {
-                uri = $"/{culture}/Accounts/reset-password";
+                uri = $"/{culture}/api/Accounts/reset-password";
                 message = _localizer["PasswordResetInstruction", uri, token];
             }
 

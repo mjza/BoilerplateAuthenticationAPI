@@ -11,7 +11,7 @@ using WebApi.Services.Auth;
 namespace WebApi.Controllers.Auth
 {
     [ApiController]
-    [Route("{culture:culture}/[controller]")]
+    [Route("{culture:culture}/api/[controller]")]
     [Produces("application/json")]
     public class AccountsController : BaseController
     {
@@ -298,7 +298,5 @@ namespace WebApi.Controllers.Auth
             else
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
-    }
-
-    internal record MessageRecord(string Message);
+    }    
 }

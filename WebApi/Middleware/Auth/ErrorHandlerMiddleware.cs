@@ -9,10 +9,13 @@ using WebApi.Helpers.Auth;
 
 namespace WebApi.Middleware.Auth
 {
+    // a record for creating error messages
+    internal record MessageRecord(string Message);
+
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
+        private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
         public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
@@ -26,29 +29,21 @@ namespace WebApi.Middleware.Auth
             {
                 await _next(context);
             }
-            catch (Exception error)
+            catch (Exception exception)
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
 
-                switch(error)
-                {
-                    case AppException:
-                        // custom application error
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        break;
-                    case KeyNotFoundException:
-                        // not found error
-                        response.StatusCode = (int)HttpStatusCode.NotFound;
-                        break;
-                    default:
-                        // unhandled error
-                        _logger.LogError(error, error.Message);
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        break;
-                }
+                _logger.LogError(exception, exception.Message);
 
-                var result = JsonSerializer.Serialize(new { message = error?.Message });
+                response.StatusCode = exception switch
+                {
+                    AppException => (int)HttpStatusCode.BadRequest,// custom application exception
+                    KeyNotFoundException => (int)HttpStatusCode.NotFound,// not found exception
+                    _ => (int)HttpStatusCode.InternalServerError,// unhandled exception                        
+                };
+
+                var result = JsonSerializer.Serialize(new MessageRecord(exception?.Message));
                 await response.WriteAsync(result);
             }
         }
